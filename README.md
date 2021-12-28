@@ -65,19 +65,17 @@ Clone a copy of the repo
 
 `git clone https://github.com/CommunityHiQ/Frends.Community.SQL.git`
 
-Restore dependencies
+Build the project
 
-`nuget restore`
+`dotnet build`
 
-Rebuild the project
+Run Tests
 
-Run Tests with MSTest. Tests can be found under
-
-`Frends.Community.SQL.Tests\bin\Release\Frends.Community.SQL.dll`
+`dotnet test`
 
 Create a nuget package
 
-`nuget pack Frends.Community.SQL.nuspec`
+`dotnet pack --configuration Release`
 
 # Contributing
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
@@ -94,6 +92,5 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 
 | Version             | Changes                 |
 | ---------------------| ---------------------|
-| 1.0.0 | Initial version of SaveQueryToCSV task |
-| 1.1.0 | Added options for destination file encoding. |
-| 1.1.1 | Converted to support .Net Framework 4.7.1 and .Net Standard 2.0. Renamed task. |
+| 1.1.1 | Migration from Frends.Community.SQL.QueryToFile. Converted to support .Net Framework 4.7.1 and .Net Standard 2.0. Renamed task. |
+| 1.1.2 | Updated README and changed CI to create release in GitHub. |
