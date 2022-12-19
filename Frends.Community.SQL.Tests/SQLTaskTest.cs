@@ -1,15 +1,15 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using NUnit.Framework;
 
 namespace Frends.Community.SQL.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SQLTest
     {
-        [TestMethod]
+        [Test]
         public void DataReaderToCsvTest_AllColumns()
         {
             var dt = new DataTable();
@@ -50,7 +50,7 @@ namespace Frends.Community.SQL.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void DataReaderToCsvTest_ExcludeColumnHeaders()
         {
             var dt = new DataTable();
@@ -73,7 +73,7 @@ namespace Frends.Community.SQL.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void DataReaderToCsvTest_SanitizeColumnHeaders()
         {
             var dt = new DataTable();
@@ -96,7 +96,7 @@ namespace Frends.Community.SQL.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void DataReaderToCsvTest_SelectedColumns()
         {
             var dt = new DataTable();
@@ -141,7 +141,7 @@ namespace Frends.Community.SQL.Tests
         /// this depends on the agent CPU of course.
         /// </summary>
         [Ignore("This test is for occasional performance testing only and depends on host CPU")]
-        [TestMethod]
+        [Test]
         public void DataReaderToCsvTest_1mRows()
         {
             var rowAmount = 1000000;
@@ -190,7 +190,7 @@ namespace Frends.Community.SQL.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void FormatDbValue_String()
         {
             var options = new SaveQueryToCSVOptions { FieldDelimiter = CsvFieldDelimiter.Semicolon };
@@ -216,7 +216,7 @@ namespace Frends.Community.SQL.Tests
                 SQL.FormatDbValue("hello\nworld", null, typeof(string), options));
         }
 
-        [TestMethod]
+        [Test]
         public void FormatDbValue_DateTime()
         {
             var options = new SaveQueryToCSVOptions
@@ -250,7 +250,7 @@ namespace Frends.Community.SQL.Tests
                 SQL.FormatDbValue(DateTime.Parse("2018-12-31T11:22:33"), "DAteTIME", typeof(DateTime), options));
         }
 
-        [TestMethod]
+        [Test]
         public void FormatDbValue_Nulls()
         {
             var options = new SaveQueryToCSVOptions();
@@ -272,7 +272,7 @@ namespace Frends.Community.SQL.Tests
                 SQL.FormatDbValue(DBNull.Value, "NVARCHAR", typeof(string), options));
         }
 
-        [TestMethod]
+        [Test]
         public void FormatDbValue_FloatDoubleDecimal()
         {
             var options = new SaveQueryToCSVOptions();
@@ -290,7 +290,7 @@ namespace Frends.Community.SQL.Tests
                 SQL.FormatDbValue((decimal)1234.543, "DECIMAL", typeof(decimal), options));
         }
 
-        [TestMethod]
+        [Test]
         public void FormatDbHeader()
         {
             // Basic case
