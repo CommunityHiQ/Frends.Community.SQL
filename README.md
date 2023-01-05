@@ -122,3 +122,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.1.1 | Migration from Frends.Community.SQL.QueryToFile. Converted to support .Net Framework 4.7.1 and .Net Standard 2.0. Renamed task. |
 | 1.1.2 | Updated README and changed CI to create release in GitHub. |
 | 1.1.3 | Updated dependencies System.ComponentModel.Annotations to 5.0.0 and CsvHelper to 27.1.1, also replaced MSTest.TestAdapter and MSTest.TestFramework with NUnit.Framework. |
+| 1.1.4 | Added BulkInsertDataTable and related test. |
