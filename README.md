@@ -55,6 +55,38 @@ Newlines in text fields are replaced with spaces.
 
 Result contains the amount of lines written to output CSV.
 
+## BulkInsertDataTable
+
+### Parameters
+| Property             | Type                 | Description                          | Example |
+| ---------------------| ---------------------| ------------------------------------ | ----- |
+| InputData | [DataTable](https://learn.microsoft.com/en-us/dotnet/api/system.data.datatable) | Data to insert into table. | ```((Func<DataTable>)(() =>
+{
+    var table = new DataTable();
+    table.Columns.Add(new DataColumn("Id", typeof(int)));
+    var row = table.NewRow();
+    row[0] = 5;
+    table.Rows.Add(row);
+    return table;
+}))()``` |
+| TableName | string | Destination table name. | MyTable |
+| Connection String | string | Connection String to be used to connect to the database. | Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword; |
+
+### Options
+| Property                         | Type                        | Description                                                                                                                                                                                                                                                                                                                                                       |
+|----------------------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Command Timeout Seconds          | int                         | Timeout in seconds to be used for the query. Default is 60 seconds,                                                                                                                                                                                                                                                                                               |
+| Fire Triggers                    | bool                        | When specified, cause the server to fire the insert triggers for the rows being inserted into the database.                                                                                                                                                                                                                                                       |
+| Keep Identity                    | bool                        | Preserve source identity values. When not specified, identity values are assigned by the destination.                                                                                                                                                                                                                                                             |
+| Sql Transaction Isolation Level  | SqlTransationIsolationLevel | Transactions specify an isolation level that defines the degree to which one transaction must be isolated from resource or data modifications made by other transactions. Possible values are: Default, None, Serializable, ReadUncommitted, ReadCommitted, RepeatableRead, Snapshot. Additional documentation https://msdn.microsoft.com/en-us/library/ms378149(v=sql.110).aspx |
+
+### Notes
+This is a wrapper around [SqlBulkCopy](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlbulkcopy), similar to [Frends.Sql.BulkInsert](https://github.com/FrendsPlatform/Frends.Sql#sqlbulkinsert).
+Unlike Frends.Sql.BulkInsert, this task takes the data as [DataTable](https://learn.microsoft.com/en-us/dotnet/api/system.data.datatable), which allows specifying column types explicitly. In contrast, Frends.Sql.BulkInsert infers the types from the first inserted row, which can cause errors with non-string nullable columns.
+
+### Returns
+Integer - Number of copied rows.
+
 # License
 
 This project is licensed under the MIT License - see the LICENSE file for details
