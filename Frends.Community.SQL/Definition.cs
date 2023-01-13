@@ -213,10 +213,6 @@ namespace Frends.Community.SQL
         /// </summary>
         public bool KeepIdentity { get; set; }
         /// <summary>
-        /// If the input properties have empty values i.e. "", the values will be converted to null if this parameter is set to true.
-        /// </summary>
-        public bool ConvertEmptyPropertyValuesToNull { get; set; }
-        /// <summary>
         /// Transactions specify an isolation level that defines the degree to which one transaction must be isolated from resource or data modifications made by other transactions. Default is Serializable.
         /// </summary>
         public SqlTransactionIsolationLevel SqlTransactionIsolationLevel { get; set; }
