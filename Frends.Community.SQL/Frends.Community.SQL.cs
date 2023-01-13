@@ -248,6 +248,12 @@ namespace Frends.Community.SQL
                 var flagEnum = options.FireTriggers.GetFlag(SqlBulkCopyOptions.FireTriggers) |
                                 options.KeepIdentity.GetFlag(SqlBulkCopyOptions.KeepIdentity);
 
+                if (options.ConvertEmptyPropertyValuesToNull)
+                {
+                    // convert string.Empty values to null (this allows inserting data to fields which are different than text (int, ..)
+                    input.InputData.SetEmptyDataRowsToNull();
+                }
+
                 if (options.SqlTransactionIsolationLevel == SqlTransactionIsolationLevel.None)
                 {
                     using (var sqlBulkCopy = new SqlBulkCopy(connection.ConnectionString, flagEnum))
@@ -312,6 +318,21 @@ namespace Frends.Community.SQL
             rowsCopiedField = typeof(SqlBulkCopy).GetField(rowsCopiedFieldName,
                 BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
             return rowsCopiedField != null ? (int)rowsCopiedField.GetValue(bulkCopy) : 0;
+        }
+        // From https://github.com/FrendsPlatform/Frends.Sql/blob/master/Frends.Sql/Extensions.cs
+        public static void SetEmptyDataRowsToNull(this DataTable table)
+        {
+            foreach (var row in table.Rows.Cast<DataRow>())
+            {
+                foreach (var column in row.ItemArray)
+                {
+                    if (column.ToString() == string.Empty)
+                    {
+                        var index = Array.IndexOf(row.ItemArray, column);
+                        row[index] = null;
+                    }
+                }
+            }
         }
     }
 }
