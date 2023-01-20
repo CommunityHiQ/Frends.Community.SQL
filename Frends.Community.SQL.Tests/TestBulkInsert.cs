@@ -88,7 +88,7 @@ namespace Frends.Community.SQL.Tests
             }
             var result =
                 await
-                    Frends.Community.SQL.SQL.BulkInsertDataTable(
+                    SQL.BulkInsertDataTable(
                         new BulkInsertInput()
                         {
                             ConnectionString = ConnectionString,
@@ -105,8 +105,8 @@ namespace Frends.Community.SQL.Tests
             Assert.AreEqual(3, result);
 
             var tableRows = GetTableRows().ToArray();
-            Assert.AreEqual(tableRows.Length, 3);
-            Assert.AreEqual(tableRows[0].LastName, "Suku");
+            Assert.AreEqual(3, tableRows.Length);
+            Assert.AreEqual("Suku", tableRows[0].LastName);
         }
 
         private IEnumerable<DbRow> GetTableRows()
