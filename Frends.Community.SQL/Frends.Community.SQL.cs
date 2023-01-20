@@ -308,8 +308,7 @@ namespace Frends.Community.SQL
         internal static int RowsCopiedCount(this SqlBulkCopy bulkCopy)
         {
             const string rowsCopiedFieldName = "_rowsCopied";
-            FieldInfo rowsCopiedField = null;
-            rowsCopiedField = typeof(SqlBulkCopy).GetField(rowsCopiedFieldName,
+            FieldInfo rowsCopiedField = typeof(SqlBulkCopy).GetField(rowsCopiedFieldName,
                 BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
             return rowsCopiedField != null ? (int)rowsCopiedField.GetValue(bulkCopy) : 0;
         }
