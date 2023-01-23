@@ -242,7 +242,6 @@ namespace Frends.Community.SQL
             using (var connection = new SqlConnection(input.ConnectionString))
             {
                 await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                cancellationToken.ThrowIfCancellationRequested();
 
                 //Get the combined flags for multiple booleans that match a flag
                 var flagEnum = options.FireTriggers.GetFlag(SqlBulkCopyOptions.FireTriggers) |
