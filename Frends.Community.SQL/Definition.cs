@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace Frends.Community.SQL
 {
@@ -174,4 +175,46 @@ namespace Frends.Community.SQL
         public string OutputFilePath { get; set; }
     }
 
+
+
+    public enum SqlTransactionIsolationLevel { Default, ReadCommitted, None, Serializable, ReadUncommitted, RepeatableRead, Snapshot }
+    public class BulkInsertInput
+    {
+        /// <summary>
+        /// DataTable of objects.
+        /// </summary>
+        [DefaultValue("new DataTable()")]
+        public DataTable InputData { get; set; }
+
+        /// <summary>
+        /// Destination table name.
+        /// </summary>
+        [DefaultValue("\"TestTable\"")]
+        public string TableName { get; set; }
+
+        /// <summary>
+        /// Connection string
+        /// </summary>
+        [PasswordPropertyText]
+        [DefaultValue("\"Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;\"")]
+        public string ConnectionString { get; set; }
+    }
+
+    public class BulkInsertOptions
+    {
+        [DefaultValue(60)]
+        public int CommandTimeoutSeconds { get; set; }
+        /// <summary>
+        /// When specified, cause the server to fire the insert triggers for the rows being inserted into the database.
+        /// </summary>
+        public bool FireTriggers { get; set; }
+        /// <summary>
+        /// Preserve source identity values. When not specified, identity values are assigned by the destination.
+        /// </summary>
+        public bool KeepIdentity { get; set; }
+        /// <summary>
+        /// Transactions specify an isolation level that defines the degree to which one transaction must be isolated from resource or data modifications made by other transactions. Default is Serializable.
+        /// </summary>
+        public SqlTransactionIsolationLevel SqlTransactionIsolationLevel { get; set; }
+    }
 }

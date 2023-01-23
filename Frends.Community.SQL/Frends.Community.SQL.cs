@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -226,6 +227,89 @@ namespace Frends.Community.SQL
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+
+        /// <summary>
+        /// Bulk insert DataTable to a SQL table.
+        /// </summary>
+        /// <param name="input">Input parameters</param>
+        /// <param name="options">Optional parameters with default values</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Copied row count</returns>
+        public static async Task<int> BulkInsertDataTable([PropertyTab] BulkInsertInput input, [PropertyTab] BulkInsertOptions options, CancellationToken cancellationToken)
+        {
+            using (var connection = new SqlConnection(input.ConnectionString))
+            {
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+                //Get the combined flags for multiple booleans that match a flag
+                var flagEnum = options.FireTriggers.GetFlag(SqlBulkCopyOptions.FireTriggers) |
+                                options.KeepIdentity.GetFlag(SqlBulkCopyOptions.KeepIdentity);
+
+                if (options.SqlTransactionIsolationLevel == SqlTransactionIsolationLevel.None)
+                {
+                    using (var sqlBulkCopy = new SqlBulkCopy(connection.ConnectionString, flagEnum))
+                    {
+                        sqlBulkCopy.BulkCopyTimeout = options.CommandTimeoutSeconds;
+                        sqlBulkCopy.DestinationTableName = input.TableName;
+
+                        await sqlBulkCopy.WriteToServerAsync(input.InputData, cancellationToken).ConfigureAwait(false);
+
+                        return sqlBulkCopy.RowsCopiedCount();
+                    }
+                }
+
+                using (var transaction =
+                    options.SqlTransactionIsolationLevel == SqlTransactionIsolationLevel.Default
+                        ? connection.BeginTransaction()
+                        : connection.BeginTransaction(options.SqlTransactionIsolationLevel.GetSqlTransactionIsolationLevel()))
+                {
+
+
+                    int rowsCopyCount;
+                    using (var sqlBulkCopy = new SqlBulkCopy(connection, flagEnum, transaction))
+                    {
+                        sqlBulkCopy.BulkCopyTimeout = options.CommandTimeoutSeconds;
+                        sqlBulkCopy.DestinationTableName = input.TableName;
+
+                        await sqlBulkCopy.WriteToServerAsync(input.InputData, cancellationToken).ConfigureAwait(false);
+
+                        rowsCopyCount = sqlBulkCopy.RowsCopiedCount();
+                    }
+                    transaction.Commit();
+                    return rowsCopyCount;
+                }
+            }
+        }
+
+        // Cast Enum value to another Enum type by value name
+        // Example: Frends.Community.SQL.SqlTransactionIsolationLevel -> System.Data.IsolationLevel
+        // From https://github.com/FrendsPlatform/Frends.Sql/blob/master/Frends.Sql/Extensions.cs
+        private static T GetEnum<T>(Enum enumValue)
+        {
+            return (T)Enum.Parse(typeof(T), enumValue.ToString());
+        }
+        // Cast Frends.Community.SQL.SqlTransactionIsolationLevel -> System.Data.IsolationLevel
+        // From https://github.com/FrendsPlatform/Frends.Sql/blob/master/Frends.Sql/Extensions.cs
+        internal static IsolationLevel GetSqlTransactionIsolationLevel(this SqlTransactionIsolationLevel sqlTransactionIsolationLevel)
+        {
+            return GetEnum<IsolationLevel>(sqlTransactionIsolationLevel);
+        }
+        // Return value or 0, depending on whether this bool is true or false, respectively.
+        // From https://github.com/FrendsPlatform/Frends.Sql/blob/master/Frends.Sql/Extensions.cs
+        public static T GetFlag<T>(this bool value, T flag)
+        {
+            return value ? flag : default(T);
+        }
+        // Get inserted row count with reflection
+        // http://stackoverflow.com/a/12271001
+        internal static int RowsCopiedCount(this SqlBulkCopy bulkCopy)
+        {
+            const string rowsCopiedFieldName = "_rowsCopied";
+            FieldInfo rowsCopiedField = typeof(SqlBulkCopy).GetField(rowsCopiedFieldName,
+                BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
+            return rowsCopiedField != null ? (int)rowsCopiedField.GetValue(bulkCopy) : 0;
         }
     }
 }
