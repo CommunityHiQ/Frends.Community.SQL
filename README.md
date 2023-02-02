@@ -46,7 +46,7 @@ Settings for included attachments
 | IncludeHeadersInOutput | bool | Wherther to include headers in output CSV. | `true` |
 | SanitizeColumnHeaders | bool | Whether to sanitize headers in output: (1) Strip any chars that are not 0-9, a-z or _ (2) Make sure that column does not start with a number or underscore (3) Force lower case | `true` |
 | AddQuotesToDates | bool | Whether to add quotes around DATE and DATETIME fields | `true` |
-| AddQuotesToStrings | bool | Whether to add quotes around string typed fields | `true` |
+| AddQuotesToStrings | bool | Whether to add quotes around string typed fields. | `true` |
 | DateFormat | string | Date format to use for formatting DATE columns, use .NET formatting tokens. Note that formatting is done using invariant culture. | `yyyy-MM-dd` |
 | DateTimeFormat | string | Date format to use for formatting DATETIME columns, use .NET formatting tokens. Note that formatting is done using invariant culture. | `yyyy-MM-dd HH:mm:ss` |
 

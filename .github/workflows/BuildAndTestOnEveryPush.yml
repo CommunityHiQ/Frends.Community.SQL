@@ -20,8 +20,10 @@ jobs:
     - name: Build
       run: dotnet build
 
-    - name: Test
+    - name: Run SaveQueryToCsvTests
       run: dotnet test --filter Frends.Community.SQL.Tests.SaveQueryToCsvTests
+
+    - name: Run TestBulkInsert
       run: dotnet test --filter Frends.Community.SQL.Tests.TestBulkInsert
 
   WindowsBuild:
