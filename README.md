@@ -97,6 +97,10 @@ Build the project
 
 `dotnet build`
 
+Build docker container
+
+`docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Salakala123!" -p 1433:1433 --name sql1 --hostname sql1 -d mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04`
+
 Run Tests
 
 `dotnet test`
