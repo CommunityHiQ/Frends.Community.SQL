@@ -39,14 +39,13 @@ namespace Frends.Community.SQL
                 writer.NewLine = options.GetLineBreakAsString();
 
                 await sqlConnection.OpenAsync(cancellationToken);
-                cancellationToken.ThrowIfCancellationRequested();
+
                 using (var command = BuildSQLCommand(parameters.Query, parameters.QueryParameters))
                 {
                     command.CommandTimeout = parameters.TimeoutSeconds;
                     command.Connection = sqlConnection;
 
                     var reader = await command.ExecuteReaderAsync(cancellationToken);
-                    cancellationToken.ThrowIfCancellationRequested();
                     output = DataReaderToCsv(reader, csvFile, options, cancellationToken);
                 }
 
