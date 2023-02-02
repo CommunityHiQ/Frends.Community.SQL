@@ -6,7 +6,28 @@ on:
       - master
 
 jobs:
-  build:
+
+  UbuntuBuild:
+    name: Build on ubuntu-latest
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: build docker container
+      run:  docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Salakala123!" -p 1433:1433 --name sql1 --hostname sql1 -d mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04
+
+    - name: Build
+      run: dotnet build
+
+    - name: Run SaveQueryToCsvTests
+      run: dotnet test --filter Frends.Community.SQL.Tests.SaveQueryToCsvTests
+
+    - name: Run TestBulkInsert
+      run: dotnet test --filter Frends.Community.SQL.Tests.TestBulkInsert
+
+  WindowsBuild:
+    needs: UbuntuBuild
     name: Build on windows-latest
     runs-on: windows-latest
     
@@ -15,6 +36,9 @@ jobs:
 
     - name: Build
       run: dotnet build
+
+    - name: Test
+      run: dotnet test --filter Frends.Community.SQL.Tests.SQLTaskTest
           
     - name: Pack release version of task
       run: dotnet pack --configuration Release --include-source
