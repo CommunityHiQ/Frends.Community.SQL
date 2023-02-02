@@ -100,6 +100,12 @@ namespace Frends.Community.SQL
         public bool AddQuotesToDates { get; set; } = true;
 
         /// <summary>
+        /// Whether to add quotes around string typed fields.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool AddQuotesToStrings { get; set; } = true;
+
+        /// <summary>
         /// Date format to use for formatting DATE columns, use .NET formatting tokens.
         /// Note that formatting is done using invariant culture.
         /// </summary>

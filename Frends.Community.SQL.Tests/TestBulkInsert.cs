@@ -13,7 +13,24 @@ namespace Frends.Community.SQL.Tests
     [TestFixture]
     public class TestBulkInsert
     {
-        private readonly string ConnectionString = "Put your test MSSQL connection string here";
+        /*
+        docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Salakala123!" -p 1433:1433 --name sql1 --hostname sql1 -d mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04
+        with Git bash add winpty to the start of
+        docker exec -it sql1 "bash"
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Salakala123!"
+        
+        Check rows before CleanUp:
+        SELECT * FROM TestTable
+        GO
+    
+        Optional queries:
+        SELECT Name FROM sys.Databases;
+        GO
+        SELECT * FROM INFORMATION_SCHEMA.TABLES;
+        GO
+        */
+
+        private readonly string ConnectionString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!";
         // The test case creates and destroys an SQL table with this name.
         // Ensure that this table does not already exist in the DB! Test aborts if it does.
         private readonly string TableName = "FrendsTestTable";

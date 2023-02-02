@@ -46,6 +46,7 @@ Settings for included attachments
 | IncludeHeadersInOutput | bool | Wherther to include headers in output CSV. | `true` |
 | SanitizeColumnHeaders | bool | Whether to sanitize headers in output: (1) Strip any chars that are not 0-9, a-z or _ (2) Make sure that column does not start with a number or underscore (3) Force lower case | `true` |
 | AddQuotesToDates | bool | Whether to add quotes around DATE and DATETIME fields | `true` |
+| AddQuotesToStrings | bool | Whether to add quotes around string typed fields | `true` |
 | DateFormat | string | Date format to use for formatting DATE columns, use .NET formatting tokens. Note that formatting is done using invariant culture. | `yyyy-MM-dd` |
 | DateTimeFormat | string | Date format to use for formatting DATETIME columns, use .NET formatting tokens. Note that formatting is done using invariant culture. | `yyyy-MM-dd HH:mm:ss` |
 
@@ -123,3 +124,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.1.2 | Updated README and changed CI to create release in GitHub. |
 | 1.1.3 | Updated dependencies System.ComponentModel.Annotations to 5.0.0 and CsvHelper to 27.1.1, also replaced MSTest.TestAdapter and MSTest.TestFramework with NUnit.Framework. |
 | 1.2.0 | Added BulkInsertDataTable and related test. |
+| 1.3.0 | Added parameter AddQuotesToStrings to SaveQueryToCSVOptions which if disabled will not add quotes to string typed fields. |

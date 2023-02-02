@@ -21,7 +21,7 @@ namespace Frends.Community.SQL
     public static class SQL
     {
         /// <summary>
-        /// Saves SQL query results to CSV file.
+        /// Saves SQL query results to CSV file. Documentation: https://github.com/CommunityHiQ/Frends.Community.SQL
         /// </summary>
         /// <param name="parameters">Parameters of task</param>
         /// <param name="options">Additional options</param>
@@ -101,7 +101,9 @@ namespace Frends.Community.SQL
                 str = str.Replace("\r\n", " ");
                 str = str.Replace("\r", " ");
                 str = str.Replace("\n", " ");
-                return $"\"{str}\"";
+                if (options.AddQuotesToStrings)
+                    return $"\"{str}\"";
+                return str;
             }
 
             if (dotnetType == typeof(DateTime))
@@ -231,7 +233,7 @@ namespace Frends.Community.SQL
 
 
         /// <summary>
-        /// Bulk insert DataTable to a SQL table.
+        /// Bulk insert DataTable to a SQL table. Documentation: https://github.com/CommunityHiQ/Frends.Community.SQL
         /// </summary>
         /// <param name="input">Input parameters</param>
         /// <param name="options">Optional parameters with default values</param>
