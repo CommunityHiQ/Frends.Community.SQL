@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Frends.Community.SQL.Tests
@@ -29,7 +30,7 @@ namespace Frends.Community.SQL.Tests
     {
         private static readonly string _connString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!";
         private static readonly string _tableName = "TestTable";
-        private static readonly string _destination = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../TestData/");
+        private static readonly string _destination = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../TestData/test.csv");
 
         [SetUp]
         public void Init()
@@ -38,13 +39,24 @@ namespace Frends.Community.SQL.Tests
             {
                 connection.Open();
                 var createTable = connection.CreateCommand();
-                createTable.CommandText = $@"IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{_tableName}') BEGIN CREATE TABLE {_tableName} ( Id int, LastName varchar(255), FirstName varchar(255), Salary decimal(6,2) ); END";
+                createTable.CommandText = $@"IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{_tableName}') BEGIN CREATE TABLE {_tableName} ( Id int, LastName varchar(255), FirstName varchar(255), Salary decimal(6,2), Image Image, TestText VarBinary(MAX)); END";
                 createTable.ExecuteNonQuery();
                 connection.Close();
             }
 
-            // Create destination file path.
-            Directory.CreateDirectory(_destination);
+            var parameters = new SqlParameter[]
+            {
+                    new SqlParameter("@Hash", SqlDbType.VarBinary)
+                    {
+                        Value = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_image.png"))
+                    },
+                    new SqlParameter("@TestText", SqlDbType.VarBinary)
+                    {
+                        Value = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_text.txt"))
+                    }
+            };
+
+            InsertTestData($"Insert into {_tableName} (Id, LastName, FirstName, Salary, Image, TestText) values (1,'Meikalainen','Matti',1523.25, {parameters[0].ParameterName}, {parameters[1].ParameterName});", parameters);
         }
 
         [TearDown]
@@ -59,23 +71,20 @@ namespace Frends.Community.SQL.Tests
                 connection.Close();
             }
 
-
             // Clean and remove destination directory
-            Directory.Delete(_destination, true);
+            File.Delete(_destination);
         }
 
         [Test]
         public async Task SaveQueryToCSV_StringWithApostrophe()
         {
-            InsertTestData($"Insert into {_tableName} values (1,'Meikalainen','Matti',1523.25);");
-
             var query = new SaveQueryToCSVParameters
             {
                 Query = $"Select Id, LastName, FirstName, REPLACE(Salary, '.', ',') AS 'Salary' from {_tableName}",
                 QueryParameters = new SQLParameter[0],
                 ConnectionString = _connString,
                 TimeoutSeconds = 30,
-                OutputFilePath = Path.Combine(_destination, "test.csv")
+                OutputFilePath = _destination
             };
 
             var options = new SaveQueryToCSVOptions
@@ -93,7 +102,7 @@ namespace Frends.Community.SQL.Tests
             };
 
             await SQL.SaveQueryToCSV(query, options, default);
-            var output = File.ReadAllText(Path.Combine(_destination, "test.csv"));
+            var output = File.ReadAllText(_destination);
 
             Assert.AreEqual("Id;LastName;FirstName;Salary\r\n1;\"Meikalainen\";\"Matti\";\"1523,25\"\r\n", output);
         }
@@ -101,15 +110,13 @@ namespace Frends.Community.SQL.Tests
         [Test]
         public async Task SaveQueryToCSV_StringWithoutApostrophe()
         {
-            InsertTestData($"Insert into {_tableName} values (1,'Meikalainen','Matti',1523.25);");
-
             var query = new SaveQueryToCSVParameters
             {
                 Query = $"Select Id, LastName, FirstName, REPLACE(Salary, '.', ',') AS 'Salary' from {_tableName}",
                 QueryParameters = new SQLParameter[0],
                 ConnectionString = _connString,
                 TimeoutSeconds = 30,
-                OutputFilePath = Path.Combine(_destination, "test.csv")
+                OutputFilePath = _destination
             };
 
             var options = new SaveQueryToCSVOptions
@@ -128,24 +135,98 @@ namespace Frends.Community.SQL.Tests
 
             await SQL.SaveQueryToCSV(query, options, default);
 
-            var output = File.ReadAllText(Path.Combine(_destination, "test.csv"));
+            var output = File.ReadAllText(_destination);
 
             Assert.AreEqual("Id;LastName;FirstName;Salary\r\n1;Meikalainen;Matti;1523,25\r\n", output);
         }
 
-        private static void InsertTestData(string commandText)
+        [Test]
+        public async Task SaveQueryToCSV_WithImageDBType()
+        {
+            var query = new SaveQueryToCSVParameters
+            {
+                Query = $"SELECT Image from {_tableName}",
+                QueryParameters = new SQLParameter[0],
+                ConnectionString = _connString,
+                TimeoutSeconds = 30,
+                OutputFilePath = _destination
+            };
+
+            var options = new SaveQueryToCSVOptions
+            {
+                FieldDelimiter = CsvFieldDelimiter.Semicolon,
+                LineBreak = CsvLineBreak.CRLF,
+                FileEncoding = FileEncoding.UTF8,
+                EnableBom = false,
+                IncludeHeadersInOutput = false,
+                SanitizeColumnHeaders = false,
+                AddQuotesToDates = false,
+                AddQuotesToStrings = false,
+                DateFormat = "yyyy-MM-dd",
+                DateTimeFormat = "yyyy-MM-ddTHH:mm:ss"
+            };
+
+            await SQL.SaveQueryToCSV(query, options, default);
+
+            var output = File.ReadAllText(_destination);
+
+            Assert.AreEqual(BitConverter.ToString(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_image.png"))), output.TrimEnd(Environment.NewLine.ToCharArray()));
+        }
+
+        [Test]
+        public async Task SaveQueryToCSV_WithBinaryDBType()
+        {
+            var query = new SaveQueryToCSVParameters
+            {
+                Query = $"SELECT TestText from {_tableName}",
+                QueryParameters = new SQLParameter[0],
+                ConnectionString = _connString,
+                TimeoutSeconds = 30,
+                OutputFilePath = _destination
+            };
+
+            var options = new SaveQueryToCSVOptions
+            {
+                FieldDelimiter = CsvFieldDelimiter.Semicolon,
+                LineBreak = CsvLineBreak.CRLF,
+                FileEncoding = FileEncoding.UTF8,
+                EnableBom = false,
+                IncludeHeadersInOutput = false,
+                SanitizeColumnHeaders = false,
+                AddQuotesToDates = false,
+                AddQuotesToStrings = false,
+                DateFormat = "yyyy-MM-dd",
+                DateTimeFormat = "yyyy-MM-ddTHH:mm:ss"
+            };
+
+            await SQL.SaveQueryToCSV(query, options, default);
+
+            var output = File.ReadAllText(_destination);
+
+            Assert.AreEqual(BitConverter.ToString(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_Text.txt"))), output.TrimEnd(Environment.NewLine.ToCharArray()));
+        }
+
+        private static void InsertTestData(string commandText, SqlParameter[] parameters = null)
         {
             using (var sqlConnection = new SqlConnection(_connString))
             {
                 sqlConnection.Open();
+
                 using (var command = new SqlCommand())
                 {
                     command.CommandText = commandText;
                     command.CommandType = CommandType.Text;
                     command.CommandTimeout = 30;
                     command.Connection = sqlConnection;
+                    if (parameters != null)
+                    {
+                        foreach (var param in parameters)
+                        {
+                            command.Parameters.Add(param);
+                        }
+                    }
 
-                    command.ExecuteReader();
+                    command.ExecuteNonQuery();
                 }
 
                 sqlConnection.Close();

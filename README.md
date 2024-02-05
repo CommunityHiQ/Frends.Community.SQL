@@ -53,9 +53,17 @@ Settings for included attachments
 ### Notes
 Newlines in text fields are replaced with spaces.
 
+Binary datatypes are converted using BitConverter.ToString() method. The method returns the byte array as string representation of the byte array. The output can be changed back to byte array using Split method: `output.Split('-').Select(b => Convert.ToByte(b, 16)).ToArray()`
+
 ### Returns
 
-Result contains the amount of lines written to output CSV.
+Result object with properties:
+
+| Property             | Type                 | Description                          | Example     |
+| ---------------------| ---------------------| ------------------------------------ | ----------- |
+| EntriesWritten       | int                  | Amount of entries written.           | 1           |
+| Path                 | string               | Path to the file.                    | C:\test.csv |
+| FileName             | string               | Name of the file                     | test.csv    |
 
 ## BulkInsertDataTable
 
@@ -129,3 +137,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.1.3 | Updated dependencies System.ComponentModel.Annotations to 5.0.0 and CsvHelper to 27.1.1, also replaced MSTest.TestAdapter and MSTest.TestFramework with NUnit.Framework. |
 | 1.2.0 | Added BulkInsertDataTable and related test. |
 | 1.3.0 | Added parameter AddQuotesToStrings to SaveQueryToCSVOptions which if disabled will not add quotes to string typed fields. |
+| 1.4.0 | Added result object SaveQueryToCSVResult with EntriesWritten, Path and FileName properties. Added option to pass custom field delimiter. Added support for binary datatypes. |
