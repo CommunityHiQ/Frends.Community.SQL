@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.IO;
-using System.Linq;
 using NUnit.Framework;
 
 namespace Frends.Community.SQL.Tests

@@ -176,7 +176,6 @@ namespace Frends.Community.SQL.Tests
                 SQL.DataReaderToCsv(reader, csvFile, options, new System.Threading.CancellationToken());
                 csvFile.Flush();
                 sw.Stop();
-                Console.WriteLine("Elapsed={0}", sw.Elapsed);
                 var result = writer.ToString();
                 var resultLines = result.Split(new String[] { "\r\n" }, StringSplitOptions.None);
 
