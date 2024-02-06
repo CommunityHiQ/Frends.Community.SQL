@@ -26,7 +26,8 @@ namespace Frends.Community.SQL
     {
         Comma,
         Semicolon,
-        Pipe
+        Pipe,
+        Custom
     }
 
     public class SQLParameter
@@ -56,6 +57,12 @@ namespace Frends.Community.SQL
         /// </summary>
         [DefaultValue(CsvFieldDelimiter.Semicolon)]
         public CsvFieldDelimiter FieldDelimiter { get; set; } = CsvFieldDelimiter.Semicolon;
+
+        /// <summary>
+        /// Custom field delimiter as a string.
+        /// </summary>
+        [UIHint(nameof(FieldDelimiter), "", CsvFieldDelimiter.Custom)]
+        public string CustomFieldDelimiter { get; set; }
 
         /// <summary>
         /// What to use as line breaks.
@@ -129,6 +136,8 @@ namespace Frends.Community.SQL
                     return "|";
                 case CsvFieldDelimiter.Semicolon:
                     return ";";
+                case CsvFieldDelimiter.Custom:
+                    return CustomFieldDelimiter;
                 default:
                     throw new Exception($"Unknown field delimeter: {this.FieldDelimiter}");
             }
@@ -181,7 +190,23 @@ namespace Frends.Community.SQL
         public string OutputFilePath { get; set; }
     }
 
+    public class SaveQueryToCSVResult
+    {
+        /// <summary>
+        /// Amount of entries written.
+        /// </summary>
+        public int EntriesWritten { get; set; }
 
+        /// <summary>
+        /// Path to the file.
+        /// </summary>
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Name of the file.
+        /// </summary>
+        public string FileName { get; set; }
+    }
 
     public enum SqlTransactionIsolationLevel { Default, ReadCommitted, None, Serializable, ReadUncommitted, RepeatableRead, Snapshot }
     public class BulkInsertInput

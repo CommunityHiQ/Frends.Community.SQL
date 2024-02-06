@@ -39,7 +39,7 @@ namespace Frends.Community.SQL.Tests
                 var entries = SQL.DataReaderToCsv(reader, csvFile, options, new System.Threading.CancellationToken());
                 csvFile.Flush();
                 var result = writer.ToString();
-                var resultLines = result.Split(new String[] { "\r\n" }, StringSplitOptions.None);
+                var resultLines = result.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
                 // 4 lines = 1 header line + 2 data lines + 1 newline at end of file
                 Assert.AreEqual(4, resultLines.Length);
@@ -176,7 +176,6 @@ namespace Frends.Community.SQL.Tests
                 SQL.DataReaderToCsv(reader, csvFile, options, new System.Threading.CancellationToken());
                 csvFile.Flush();
                 sw.Stop();
-                Console.WriteLine("Elapsed={0}", sw.Elapsed);
                 var result = writer.ToString();
                 var resultLines = result.Split(new String[] { "\r\n" }, StringSplitOptions.None);
 

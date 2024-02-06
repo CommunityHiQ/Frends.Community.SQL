@@ -26,8 +26,8 @@ namespace Frends.Community.SQL
         /// <param name="parameters">Parameters of task</param>
         /// <param name="options">Additional options</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Returns amount of entries written</returns>
-        public async static Task<int> SaveQueryToCSV([PropertyTab] SaveQueryToCSVParameters parameters, [PropertyTab] SaveQueryToCSVOptions options, CancellationToken cancellationToken)
+        /// <returns>object { int EntriesWritten, string Path, string FileName }</returns>
+        public async static Task<SaveQueryToCSVResult> SaveQueryToCSV([PropertyTab] SaveQueryToCSVParameters parameters, [PropertyTab] SaveQueryToCSVOptions options, CancellationToken cancellationToken)
         {
             var output = 0;
             var encoding = GetEncoding(options.FileEncoding, options.EnableBom, options.EncodingInString);
@@ -52,7 +52,7 @@ namespace Frends.Community.SQL
                 csvFile.Flush();
             }
 
-            return output;
+            return new SaveQueryToCSVResult { EntriesWritten = output, Path = parameters.OutputFilePath, FileName = Path.GetFileName(parameters.OutputFilePath) };
         }
 
         public static CsvWriter CreateCsvWriter(string delimeter, TextWriter writer)
@@ -126,22 +126,16 @@ namespace Frends.Community.SQL
             }
 
             if (dotnetType == typeof(float))
-            {
-                var floatValue = (float)value;
-                return floatValue.ToString("0.###########", CultureInfo.InvariantCulture);
-            }
+                return ((float)value).ToString("0.###########", CultureInfo.InvariantCulture);
 
             if (dotnetType == typeof(double))
-            {
-                var doubleValue = (double)value;
-                return doubleValue.ToString("0.###########", CultureInfo.InvariantCulture);
-            }
+                return ((double)value).ToString("0.###########", CultureInfo.InvariantCulture);
 
             if (dotnetType == typeof(decimal))
-            {
-                var decimalValue = (decimal)value;
-                return decimalValue.ToString("0.###########", CultureInfo.InvariantCulture);
-            }
+                return ((decimal)value).ToString("0.###########", CultureInfo.InvariantCulture);
+
+            if (dotnetType == typeof(byte[]))
+                return BitConverter.ToString((byte[])value);
 
             return value.ToString();
         }
@@ -291,18 +285,21 @@ namespace Frends.Community.SQL
         {
             return (T)Enum.Parse(typeof(T), enumValue.ToString());
         }
+
         // Cast Frends.Community.SQL.SqlTransactionIsolationLevel -> System.Data.IsolationLevel
         // From https://github.com/FrendsPlatform/Frends.Sql/blob/master/Frends.Sql/Extensions.cs
         internal static IsolationLevel GetSqlTransactionIsolationLevel(this SqlTransactionIsolationLevel sqlTransactionIsolationLevel)
         {
             return GetEnum<IsolationLevel>(sqlTransactionIsolationLevel);
         }
+
         // Return value or 0, depending on whether this bool is true or false, respectively.
         // From https://github.com/FrendsPlatform/Frends.Sql/blob/master/Frends.Sql/Extensions.cs
         public static T GetFlag<T>(this bool value, T flag)
         {
-            return value ? flag : default(T);
+            return value ? flag : default;
         }
+
         // Get inserted row count with reflection
         // http://stackoverflow.com/a/12271001
         internal static int RowsCopiedCount(this SqlBulkCopy bulkCopy)
