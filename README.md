@@ -138,3 +138,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.2.0 | Added BulkInsertDataTable and related test. |
 | 1.3.0 | Added parameter AddQuotesToStrings to SaveQueryToCSVOptions which if disabled will not add quotes to string typed fields. |
 | 1.4.0 | Added result object SaveQueryToCSVResult with EntriesWritten, Path and FileName properties. Added option to pass custom field delimiter. Added support for binary datatypes. |
+| 2.0.0 | Added targeting to .NET6 and .NET8. Updated the following packages: CsvHelper to v33.0.1 and System.Configuration.ConfigurationManager to 9.0.0. Replaced System.Data.SqlClient with Microsoft.Data.SqlClient, as the former is deprecated. Made small adjustments as required after package updates. |
