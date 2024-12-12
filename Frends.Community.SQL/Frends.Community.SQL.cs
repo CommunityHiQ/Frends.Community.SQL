@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -307,7 +307,7 @@ namespace Frends.Community.SQL
             const string rowsCopiedFieldName = "_rowsCopied";
             FieldInfo rowsCopiedField = typeof(SqlBulkCopy).GetField(rowsCopiedFieldName,
                 BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
-            return rowsCopiedField != null ? (int)rowsCopiedField.GetValue(bulkCopy) : 0;
+            return rowsCopiedField != null ? Convert.ToInt32(rowsCopiedField.GetValue(bulkCopy)) : 0;
         }
     }
 }
