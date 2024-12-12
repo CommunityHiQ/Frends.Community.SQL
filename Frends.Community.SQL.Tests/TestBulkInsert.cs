@@ -30,7 +30,7 @@ namespace Frends.Community.SQL.Tests
         GO
         */
 
-        private readonly string ConnectionString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!";
+        private readonly string ConnectionString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!;TrustServerCertificate=True";
         // The test case creates and destroys an SQL table with this name.
         // Ensure that this table does not already exist in the DB! Test aborts if it does.
         private readonly string TableName = "FrendsTestTable";

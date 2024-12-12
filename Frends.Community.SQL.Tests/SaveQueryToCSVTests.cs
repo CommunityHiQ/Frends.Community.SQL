@@ -27,7 +27,7 @@ namespace Frends.Community.SQL.Tests
     [TestFixture]
     class SaveQueryToCSVTests
     {
-        private static readonly string _connString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!";
+        private static readonly string _connString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!;TrustServerCertificate=True";
         private static readonly string _tableName = "TestTable";
         private static readonly string _destination = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../TestData/test.csv");
 
