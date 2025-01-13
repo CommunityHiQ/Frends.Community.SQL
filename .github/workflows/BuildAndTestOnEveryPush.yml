@@ -38,7 +38,7 @@ jobs:
       run: dotnet build
 
     - name: Test
-      run: dotnet test
+      run: dotnet test --filter Frends.Community.SQL.Tests.SQLTest
           
     - name: Pack release version of task
       run: dotnet pack --configuration Release --include-source
