@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using System.IO;
 using NUnit.Framework;
@@ -27,7 +27,7 @@ namespace Frends.Community.SQL.Tests
     [TestFixture]
     class SaveQueryToCSVTests
     {
-        private static readonly string _connString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!";
+        private static readonly string _connString = "Server=127.0.0.1,1433;Database=Master;User Id=SA;Password=Salakala123!;TrustServerCertificate=True";
         private static readonly string _tableName = "TestTable";
         private static readonly string _destination = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../TestData/test.csv");
 
@@ -169,7 +169,7 @@ namespace Frends.Community.SQL.Tests
 
             var output = File.ReadAllText(_destination);
 
-            Assert.AreEqual(BitConverter.ToString(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_image.png"))), output.TrimEnd(Environment.NewLine.ToCharArray()));
+            Assert.AreEqual(BitConverter.ToString(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_image.png"))), output.TrimEnd('\r', '\n'));
         }
 
         [Test]
@@ -202,7 +202,7 @@ namespace Frends.Community.SQL.Tests
 
             var output = File.ReadAllText(_destination);
 
-            Assert.AreEqual(BitConverter.ToString(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_Text.txt"))), output.TrimEnd(Environment.NewLine.ToCharArray()));
+            Assert.AreEqual(BitConverter.ToString(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(_destination), "Test_text.txt"))), output.TrimEnd('\r', '\n'));
         }
 
         private static void InsertTestData(string commandText, SqlParameter[] parameters = null)
